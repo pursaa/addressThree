@@ -43,6 +43,17 @@ function addAddressForm() {
                             '</div>');
 }
 
+function getAddresses(contact) {
+  $(".new-address").each(function() {
+    var inputtedStreet = $(this).find("input.new-street").val();
+    var inputtedCity = $(this).find("input.new-city").val();
+    var inputtedState = $(this).find("input.new-state").val();
+    var newAddress = new Address(inputtedStreet, inputtedCity, inputtedState);
+    contact.addresses.push(newAddress);
+  });
+  return contact;
+}
+
 $(document).ready(function() {
   $("#add-address").click(function() {
     addAddressForm();
@@ -56,13 +67,7 @@ $(document).ready(function() {
 
     var newContact = new Contact(inputtedFirstName, inputtedLastName);
 
-    $(".new-address").each(function() {
-      var inputtedStreet = $(this).find("input.new-street").val();
-      var inputtedCity = $(this).find("input.new-city").val();
-      var inputtedState = $(this).find("input.new-state").val();
-      var newAddress = new Address(inputtedStreet, inputtedCity, inputtedState);
-      newContact.addresses.push(newAddress);
-    });
+    newContact = getAddresses(newContact);
 
     $("ul#contacts").append("<li><span class='contact'>" + newContact.fullName() + "</span>" +
       " <span class='edit'>Edit</span></li>");
@@ -95,14 +100,10 @@ $(document).ready(function() {
         newContact.lastName = $("input#new-last-name").val();
         thisContact.text(newContact.fullName());
 
-        newContact.addresses = []
-        $(".new-address").each(function() {
-          var inputtedStreet = $(this).find("input.new-street").val();
-          var inputtedCity = $(this).find("input.new-city").val();
-          var inputtedState = $(this).find("input.new-state").val();
-          var newAddress = new Address(inputtedStreet, inputtedCity, inputtedState);
-          newContact.addresses.push(newAddress);
-        });
+        newContact.addresses = [];
+        newContact = getAddresses(newContact);
+        clearFields();
+        $("#update").hide();
       });
     });
     clearFields();
