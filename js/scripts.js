@@ -26,24 +26,28 @@ function clearFields() {
   $("input.new-state").val("");
 }
 
+function addAddressForm() {
+  $("#new-address").append('<br><div class="new-address">' +
+                              '<div class="form-group">' +
+                                '<label for="new-street">Street</label>' +
+                                '<input type="text" class="form-control new-street">' +
+                              '</div>' +
+                              '<div class="form-group">' +
+                                '<label for="new-city">City</label>' +
+                                '<input type="text" class="form-control new-city">' +
+                              '</div>' +
+                              '<div class="form-group">' +
+                                '<label for="new-state">State</label>' +
+                                '<input type="text" class="form-control new-state">' +
+                              '</div>' +
+                            '</div>');
+}
+
 $(document).ready(function() {
   $("#add-address").click(function() {
-    $("#new-address").append('<br><div class="new-address">' +
-                                '<div class="form-group">' +
-                                  '<label for="new-street">Street</label>' +
-                                  '<input type="text" class="form-control new-street">' +
-                                '</div>' +
-                                '<div class="form-group">' +
-                                  '<label for="new-city">City</label>' +
-                                  '<input type="text" class="form-control new-city">' +
-                                '</div>' +
-                                '<div class="form-group">' +
-                                  '<label for="new-state">State</label>' +
-                                  '<input type="text" class="form-control new-state">' +
-                                '</div>' +
-                              '</div>');
+    addAddressForm();
   });
-  
+
   $("form#new-contact").submit(function(event) {
     event.preventDefault();
 
@@ -60,7 +64,8 @@ $(document).ready(function() {
       newContact.addresses.push(newAddress);
     });
 
-    $("ul#contacts").append("<li><span class='contact'>" + newContact.fullName() + "</span></li>");
+    $("ul#contacts").append("<li><span class='contact'>" + newContact.fullName() + "</span>" +
+      " <span class='edit'>Edit</span></li>");
 
     $(".contact").last().click(function() {
       $("#show-contact").show();
@@ -73,6 +78,33 @@ $(document).ready(function() {
       });
     });
 
+    $(".edit").last().click(function() {
+      var thisContact = $(this).prev();
+      $("input#new-first-name").val(newContact.firstName);
+      $("input#new-last-name").val(newContact.lastName);
+      var addressCount = 0;
+      $(".new-address").each(function() {
+        $(this).find(".new-street").val(newContact.addresses[addressCount].street);
+        $(this).find("input.new-city").val(newContact.addresses[addressCount].city);
+        $(this).find("input.new-state").val(newContact.addresses[addressCount].state);
+        addressCount += 1;
+      });
+      $("#update").show();
+      $("#update").click(function() {
+        newContact.firstName = $("input#new-first-name").val();
+        newContact.lastName = $("input#new-last-name").val();
+        thisContact.text(newContact.fullName());
+
+        newContact.addresses = []
+        $(".new-address").each(function() {
+          var inputtedStreet = $(this).find("input.new-street").val();
+          var inputtedCity = $(this).find("input.new-city").val();
+          var inputtedState = $(this).find("input.new-state").val();
+          var newAddress = new Address(inputtedStreet, inputtedCity, inputtedState);
+          newContact.addresses.push(newAddress);
+        });
+      });
+    });
     clearFields();
   });
 });
