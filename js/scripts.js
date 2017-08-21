@@ -54,9 +54,24 @@ function getAddresses(contact) {
   return contact;
 }
 
+var thisContact;
+var thisContactObj;
+
 $(document).ready(function() {
   $("#add-address").click(function() {
     addAddressForm();
+  });
+
+  $("#update").click(function() {
+    console.log("This is the onclick for " + thisContact.text());
+    thisContactObj.firstName = $("input#new-first-name").val();
+    thisContactObj.lastName = $("input#new-last-name").val();
+    thisContact.text(thisContactObj.fullName());
+
+    thisContactObj.addresses = [];
+    thisContactObj = getAddresses(thisContactObj);
+    clearFields();
+    $("#update").hide();
   });
 
   $("form#new-contact").submit(function(event) {
@@ -84,7 +99,8 @@ $(document).ready(function() {
     });
 
     $(".edit").last().click(function() {
-      var thisContact = $(this).prev();
+      thisContactObj = newContact;
+      thisContact = $(this).prev();
       $("input#new-first-name").val(newContact.firstName);
       $("input#new-last-name").val(newContact.lastName);
       var addressCount = 0;
@@ -95,17 +111,8 @@ $(document).ready(function() {
         addressCount += 1;
       });
       $("#update").show();
-      $("#update").click(function() {
-        newContact.firstName = $("input#new-first-name").val();
-        newContact.lastName = $("input#new-last-name").val();
-        thisContact.text(newContact.fullName());
-
-        newContact.addresses = [];
-        newContact = getAddresses(newContact);
-        clearFields();
-        $("#update").hide();
-      });
     });
+
     clearFields();
   });
 });
